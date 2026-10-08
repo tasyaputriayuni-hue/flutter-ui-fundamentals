@@ -8,7 +8,7 @@ class CourseProvider extends ChangeNotifier {
 
   CourseProvider(this.repository);
 
-  final Set<String> favorites = <String>{};
+  final Set<String> _favorites = <String>{};
 
   List<Course> _courses = [];
   bool _isLoading = false;
@@ -18,11 +18,19 @@ class CourseProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  bool isFavorite(String code) {
-    return favorites.contains(code);
+  Set<String> get favorites => Set.unmodifiable(_favorites);
+
+  int get favoriteCount => _favorites.length;
+
+  List<Course> get favoriteCourses {
+    return _courses
+        .where((course) => _favorites.contains(course.code))
+        .toList();
   }
 
-  int get favoriteCount => favorites.length;
+  bool isFavorite(String code) {
+    return _favorites.contains(code);
+  }
 
   Future<void> loadCourses() async {
     _isLoading = true;
@@ -40,10 +48,10 @@ class CourseProvider extends ChangeNotifier {
   }
 
   void toggleFavorite(String code) {
-    if (favorites.contains(code)) {
-      favorites.remove(code);
+    if (_favorites.contains(code)) {
+      _favorites.remove(code);
     } else {
-      favorites.add(code);
+      _favorites.add(code);
     }
 
     notifyListeners();

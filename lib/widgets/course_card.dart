@@ -1,44 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/course.dart';
+import '../providers/course_provider.dart';
 
 class CourseCard extends StatelessWidget {
   final Course course;
+  final VoidCallback? onTap;
 
-  const CourseCard({super.key, required this.course});
+  const CourseCard({super.key, required this.course, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    IconData statusIcon;
     String statusText;
     Color statusColor;
 
     if (course.status == 'done') {
-      statusIcon = Icons.check_circle;
       statusText = 'Selesai';
       statusColor = Colors.green;
     } else if (course.status == 'active') {
-      statusIcon = Icons.play_circle;
       statusText = 'Aktif';
       statusColor = Colors.blue;
     } else {
-      statusIcon = Icons.schedule;
       statusText = 'Belum';
       statusColor = Colors.orange;
     }
 
+    final provider = context.watch<CourseProvider>();
+    final isFavorite = provider.isFavorite(course.code);
+
     return Card(
       color: const Color(0xFFFFF8FF),
       child: ListTile(
-        leading: Icon(statusIcon, color: statusColor),
+        onTap: onTap,
+        leading: Icon(Icons.menu_book, color: statusColor),
         title: Text(course.title),
-        subtitle: Text('${course.code} • ${course.credits} SKS'),
-        trailing: Text(
-          statusText,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: statusColor,
+        subtitle: Text('${course.code} • ${course.credits} SKS • $statusText'),
+        trailing: IconButton(
+          tooltip: isFavorite ? 'Hapus dari favorite' : 'Tambah ke favorite',
+          onPressed: () {
+            context.read<CourseProvider>().toggleFavorite(course.code);
+          },
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite ? Colors.pink : Colors.grey,
           ),
         ),
       ),

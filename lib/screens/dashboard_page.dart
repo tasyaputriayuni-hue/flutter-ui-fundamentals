@@ -5,6 +5,9 @@ import '../providers/course_provider.dart';
 import '../widgets/course_card.dart';
 import '../widgets/summary_card.dart';
 
+import 'course_detail_page.dart';
+import 'favorites_page.dart';
+
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
 const String studentSemester = 'Semester 5';
@@ -62,6 +65,52 @@ class _DashboardPageState extends State<DashboardPage> {
         backgroundColor: const Color(0xFFFFF7FF),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          Consumer<CourseProvider>(
+            builder: (context, provider, child) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    IconButton(
+                      tooltip: 'Favorite Courses',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const FavoritesPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite),
+                    ),
+                    if (provider.favoriteCount > 0)
+                      Positioned(
+                        right: 2,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.pink,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${provider.favoriteCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
 
       body: Consumer<CourseProvider>(
@@ -214,18 +263,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 // ),
                 const SizedBox(height: 16),
 
-                const FavoriteSection(),
-
-                const SizedBox(height: 16),
-
-                const FavoriteCounterSection(),
-
-                const SizedBox(height: 16),
-
-                const ProviderExperimentSection(),
-
-                const SizedBox(height: 16),
-
                 // summary
 
                 // summary
@@ -284,7 +321,17 @@ class _DashboardPageState extends State<DashboardPage> {
                   itemBuilder: (context, index) {
                     final course = courses[index];
 
-                    return CourseCard(course: course);
+                    return CourseCard(
+                      course: course,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CourseDetailPage(course: course),
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
 
@@ -320,253 +367,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class FavoriteSection extends StatefulWidget {
-  const FavoriteSection({super.key});
-
-  @override
-  State<FavoriteSection> createState() => _FavoriteSectionState();
-}
-
-class _FavoriteSectionState extends State<FavoriteSection> {
-  // Single source of truth untuk favorite.
-  // Dua child membaca nilai yang sama dari parent ini.
-  bool isFavorite = false;
-
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Eksperimen Single Source of Truth',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-
-        const SizedBox(height: 8),
-
-        FavoriteStatusCard(isFavorite: isFavorite),
-
-        const SizedBox(height: 8),
-
-        FavoriteActionCard(isFavorite: isFavorite, onToggle: toggleFavorite),
-      ],
-    );
-  }
-}
-
-class FavoriteCounterSection extends StatefulWidget {
-  const FavoriteCounterSection({super.key});
-
-  @override
-  State<FavoriteCounterSection> createState() => _FavoriteCounterSectionState();
-}
-
-class _FavoriteCounterSectionState extends State<FavoriteCounterSection> {
-  final ValueNotifier<int> favoriteCount = ValueNotifier<int>(0);
-
-  @override
-  void dispose() {
-    favoriteCount.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFFFF8FF),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Eksperimen ValueNotifier',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 8),
-
-            ValueListenableBuilder<int>(
-              valueListenable: favoriteCount,
-              builder: (context, value, child) {
-                return Text(
-                  'Jumlah favorite sementara: $value',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            ElevatedButton.icon(
-              onPressed: () {
-                favoriteCount.value++;
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Tambah Favorite'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProviderExperimentSection extends StatelessWidget {
-  const ProviderExperimentSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFFFF8FF),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Eksperimen Provider',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 8),
-
-            const ProviderFavoriteCount(),
-
-            const SizedBox(height: 8),
-
-            Consumer<CourseProvider>(
-              builder: (context, provider, child) {
-                final isFavorite = provider.isFavorite('MOB03');
-
-                return Row(
-                  children: [
-                    Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.pink : Colors.grey,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        isFavorite
-                            ? 'MOB03 sudah menjadi favorite'
-                            : 'MOB03 belum menjadi favorite',
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            ElevatedButton.icon(
-              onPressed: () {
-                context.read<CourseProvider>().toggleFavorite('MOB03');
-              },
-              icon: const Icon(Icons.favorite),
-              label: const Text('Toggle Favorite MOB03'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProviderFavoriteCount extends StatelessWidget {
-  const ProviderFavoriteCount({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = context.watch<CourseProvider>();
-
-    return Text(
-      'Jumlah favorite dari Provider: ${provider.favoriteCount}',
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-    );
-  }
-}
-
-class FavoriteStatusCard extends StatelessWidget {
-  final bool isFavorite;
-
-  const FavoriteStatusCard({super.key, required this.isFavorite});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFFFF8FF),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.pink : Colors.grey,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                isFavorite
-                    ? 'Status favorit: Dipilih'
-                    : 'Status favorit: Belum dipilih',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class FavoriteActionCard extends StatelessWidget {
-  final bool isFavorite;
-  final VoidCallback onToggle;
-
-  const FavoriteActionCard({
-    super.key,
-    required this.isFavorite,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFFFF8FF),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                isFavorite
-                    ? 'Course sudah menjadi favorit'
-                    : 'Course belum menjadi favorit',
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: onToggle,
-              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-              tooltip: 'Toggle favorite',
-            ),
-          ],
-        ),
       ),
     );
   }
