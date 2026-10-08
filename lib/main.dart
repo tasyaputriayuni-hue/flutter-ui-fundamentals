@@ -44,15 +44,6 @@ class _DashboardPageState extends State<DashboardPage> {
   // tampil/sembunyinya detail profil di DashboardPage.
   bool showProfileDetails = true;
 
-  // nilai ini digunakan oleh lebih dari satu child widget.
-  bool isFavorite = false;
-
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -136,7 +127,7 @@ class _DashboardPageState extends State<DashboardPage> {
       backgroundColor: const Color(0xFFFFF7FF),
 
       appBar: AppBar(
-        title: const Text('Learning Dashboard'),
+        title: const Text('Flutter UI Fundamentals'),
         backgroundColor: const Color(0xFFFFF7FF),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -284,21 +275,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 // ),
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Eksperimen Shared Favorite',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 8),
-
-                FavoriteStatusCard(isFavorite: isFavorite),
-
-                const SizedBox(height: 8),
-
-                FavoriteActionCard(
-                  isFavorite: isFavorite,
-                  onToggle: toggleFavorite,
-                ),
+                const FavoriteSection(),
 
                 const SizedBox(height: 16),
 
@@ -393,6 +370,46 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         },
       ),
+    );
+  }
+}
+
+class FavoriteSection extends StatefulWidget {
+  const FavoriteSection({super.key});
+
+  @override
+  State<FavoriteSection> createState() => _FavoriteSectionState();
+}
+
+class _FavoriteSectionState extends State<FavoriteSection> {
+  // Single source of truth untuk favorite.
+  // Dua child membaca nilai yang sama dari parent ini.
+  bool isFavorite = false;
+
+  void toggleFavorite() {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Eksperimen Single Source of Truth',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+
+        const SizedBox(height: 8),
+
+        FavoriteStatusCard(isFavorite: isFavorite),
+
+        const SizedBox(height: 8),
+
+        FavoriteActionCard(isFavorite: isFavorite, onToggle: toggleFavorite),
+      ],
     );
   }
 }
