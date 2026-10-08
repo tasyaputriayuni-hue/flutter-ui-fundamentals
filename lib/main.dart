@@ -13,7 +13,8 @@ const String studentSemester = 'Semester 5';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => CourseProvider(),
+      create: (_) =>
+          CourseProvider(CourseRepository(CourseService()))..loadCourses(),
       child: const MyApp(),
     ),
   );
@@ -39,20 +40,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  late Future<List<Course>> courseFuture;
-
   // local state: hanya digunakan untuk mengatur
   // tampil/sembunyinya detail profil di DashboardPage.
   bool showProfileDetails = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final courseRepository = CourseRepository(CourseService());
-
-    courseFuture = courseRepository.getCourses();
-  }
 
   // reusable widget 1
   Widget buildSummaryCard(String value, String label, IconData icon) {
@@ -136,28 +126,44 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 0,
       ),
 
-      body: FutureBuilder<List<Course>>(
-        future: courseFuture,
-        builder: (context, snapshot) {
+      body: Consumer<CourseProvider>(
+        builder: (context, provider, child) {
           // loading state
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
           // error state
-          if (snapshot.hasError) {
+          if (provider.error != null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Gagal memuat data: ${snapshot.error}',
-                  textAlign: TextAlign.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Gagal memuat data:\n${provider.error}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: provider.loadCourses,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Coba Lagi'),
+                    ),
+                  ],
                 ),
               ),
             );
           }
 
-          final courses = snapshot.data!;
+          final courses = provider.courses;
+
+          if (courses.isEmpty) {
+            return const Center(child: Text('Belum ada data course.'));
+          }
 
           final int completed = courses
               .where((course) => course.status == 'done')
