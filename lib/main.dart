@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 
 import 'course_provider.dart';
+import 'models/course.dart';
 
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
@@ -89,9 +90,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // reusable widget 2
-  Widget buildCourseCard(Map<String, dynamic> course) {
-    final String status = course['status'] as String;
+  Widget buildCourseCard(Course course) {
+    final String status = course.status;
 
     IconData statusIcon;
     String statusText;
@@ -115,8 +115,8 @@ class _DashboardPageState extends State<DashboardPage> {
       color: const Color(0xFFFFF8FF),
       child: ListTile(
         leading: Icon(statusIcon, color: statusColor),
-        title: Text(course['title'] as String),
-        subtitle: Text('${course['code']} • ${course['credits']} SKS'),
+        title: Text(course.title),
+        subtitle: Text('${course.code} • ${course.credits} SKS'),
         trailing: Text(
           statusText,
           style: TextStyle(
@@ -166,19 +166,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
           final student = data['student'] as Map<String, dynamic>;
 
-          final courses = data['courses'] as List<dynamic>;
+          final coursesJson = data['courses'] as List<dynamic>;
+
+          final courses = coursesJson
+              .map((course) => Course.fromJson(course as Map<String, dynamic>))
+              .toList();
 
           final int completed = courses
-              .where(
-                (course) =>
-                    (course as Map<String, dynamic>)['status'] == 'done',
-              )
+              .where((course) => course.status == 'done')
               .length;
 
           final int totalCredits = courses.fold<int>(
             0,
-            (total, course) =>
-                total + ((course as Map<String, dynamic>)['credits'] as int),
+            (total, course) => total + course.credits,
           );
 
           return SingleChildScrollView(
@@ -351,7 +351,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final course = courses[index] as Map<String, dynamic>;
+                    final course = courses[index];
 
                     return buildCourseCard(course);
                   },
