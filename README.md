@@ -556,3 +556,15 @@ Asset JSON
 ```
 
 Struktur ini membuat aplikasi lebih mudah dipelihara, diuji, dan dikembangkan jika sumber data atau kebutuhan aplikasi berubah di kemudian hari.
+
+## Status Praktikum
+
+Worksheet **State Management & Mobile Application Architecture** telah diselesaikan sampai Tahap 17.
+
+- Nama: Putu Tasya Putri Ayuni
+- NIM: 2415051031
+- Aplikasi: Course Explorer v2
+- State Management: Provider + ChangeNotifier
+- Architecture: Provider → Repository → Service
+- Responsive Navigation: NavigationBar + NavigationRail
+- Status: Selesai
