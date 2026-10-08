@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:provider/provider.dart';
+
+import 'course_provider.dart';
 
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
@@ -15,7 +18,12 @@ Future<Map<String, dynamic>> loadStudentData() async {
 }
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CourseProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
