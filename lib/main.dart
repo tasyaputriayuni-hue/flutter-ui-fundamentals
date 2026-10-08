@@ -279,6 +279,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 const SizedBox(height: 16),
 
+                const FavoriteCounterSection(),
+
+                const SizedBox(height: 16),
+
+                // summary
+
                 // summary
                 const Text(
                   'Ringkasan Pembelajaran',
@@ -410,6 +416,67 @@ class _FavoriteSectionState extends State<FavoriteSection> {
 
         FavoriteActionCard(isFavorite: isFavorite, onToggle: toggleFavorite),
       ],
+    );
+  }
+}
+
+class FavoriteCounterSection extends StatefulWidget {
+  const FavoriteCounterSection({super.key});
+
+  @override
+  State<FavoriteCounterSection> createState() => _FavoriteCounterSectionState();
+}
+
+class _FavoriteCounterSectionState extends State<FavoriteCounterSection> {
+  final ValueNotifier<int> favoriteCount = ValueNotifier<int>(0);
+
+  @override
+  void dispose() {
+    favoriteCount.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFFFF8FF),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Eksperimen ValueNotifier',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 8),
+
+            ValueListenableBuilder<int>(
+              valueListenable: favoriteCount,
+              builder: (context, value, child) {
+                return Text(
+                  'Jumlah favorite sementara: $value',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 8),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                favoriteCount.value++;
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Tambah Favorite'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
