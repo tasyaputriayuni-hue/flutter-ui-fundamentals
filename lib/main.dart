@@ -44,6 +44,15 @@ class _DashboardPageState extends State<DashboardPage> {
   // tampil/sembunyinya detail profil di DashboardPage.
   bool showProfileDetails = true;
 
+  // nilai ini digunakan oleh lebih dari satu child widget.
+  bool isFavorite = false;
+
+  void toggleFavorite() {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,11 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // reusable widget 1
-  Widget buildSummaryCard(
-    String value,
-    String label,
-    IconData icon,
-  ) {
+  Widget buildSummaryCard(String value, String label, IconData icon) {
     return Expanded(
       child: Card(
         color: const Color(0xFFFFF8FF),
@@ -63,10 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              Icon(
-                icon,
-                size: 24,
-              ),
+              Icon(icon, size: 24),
               const SizedBox(height: 6),
               Text(
                 value,
@@ -79,9 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
-                ),
+                style: const TextStyle(fontSize: 11),
               ),
             ],
           ),
@@ -91,9 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // reusable widget 2
-  Widget buildCourseCard(
-    Map<String, dynamic> course,
-  ) {
+  Widget buildCourseCard(Map<String, dynamic> course) {
     final String status = course['status'] as String;
 
     IconData statusIcon;
@@ -117,16 +115,9 @@ class _DashboardPageState extends State<DashboardPage> {
     return Card(
       color: const Color(0xFFFFF8FF),
       child: ListTile(
-        leading: Icon(
-          statusIcon,
-          color: statusColor,
-        ),
-        title: Text(
-          course['title'] as String,
-        ),
-        subtitle: Text(
-          '${course['code']} • ${course['credits']} SKS',
-        ),
+        leading: Icon(statusIcon, color: statusColor),
+        title: Text(course['title'] as String),
+        subtitle: Text('${course['code']} • ${course['credits']} SKS'),
         trailing: Text(
           statusText,
           style: TextStyle(
@@ -156,9 +147,7 @@ class _DashboardPageState extends State<DashboardPage> {
         builder: (context, snapshot) {
           // loading state
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           // error state
@@ -176,26 +165,21 @@ class _DashboardPageState extends State<DashboardPage> {
 
           final data = snapshot.data!;
 
-          final student =
-              data['student'] as Map<String, dynamic>;
+          final student = data['student'] as Map<String, dynamic>;
 
-          final courses =
-              data['courses'] as List<dynamic>;
+          final courses = data['courses'] as List<dynamic>;
 
           final int completed = courses
               .where(
                 (course) =>
-                    (course as Map<String, dynamic>)['status'] ==
-                    'done',
+                    (course as Map<String, dynamic>)['status'] == 'done',
               )
               .length;
 
           final int totalCredits = courses.fold<int>(
             0,
             (total, course) =>
-                total +
-                ((course as Map<String, dynamic>)['credits']
-                    as int),
+                total + ((course as Map<String, dynamic>)['credits'] as int),
           );
 
           return SingleChildScrollView(
@@ -203,7 +187,6 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // profile
                 Center(
                   child: SizedBox(
@@ -237,9 +220,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                             Text(
                               student['nim'] as String,
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
+                              style: const TextStyle(fontSize: 12),
                             ),
 
                             const SizedBox(height: 4),
@@ -301,16 +282,30 @@ class _DashboardPageState extends State<DashboardPage> {
                 //     ),
                 //   ],
                 // ),
+                const SizedBox(height: 16),
+
+                const Text(
+                  'Eksperimen Shared Favorite',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 8),
+
+                FavoriteStatusCard(isFavorite: isFavorite),
+
+                const SizedBox(height: 8),
+
+                FavoriteActionCard(
+                  isFavorite: isFavorite,
+                  onToggle: toggleFavorite,
+                ),
 
                 const SizedBox(height: 16),
 
                 // summary
                 const Text(
                   'Ringkasan Pembelajaran',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 8),
@@ -342,20 +337,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 // list materi
                 const Text(
                   'Materi Pembelajaran',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 4),
 
                 Text(
                   '$completed dari ${courses.length} materi selesai',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
 
                 const SizedBox(height: 8),
@@ -365,8 +354,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final course =
-                        courses[index] as Map<String, dynamic>;
+                    final course = courses[index] as Map<String, dynamic>;
 
                     return buildCourseCard(course);
                   },
@@ -381,25 +369,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF8FF),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.black12,
-                    ),
+                    border: Border.all(color: Colors.black12),
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.storage,
-                        size: 18,
-                      ),
+                      Icon(Icons.storage, size: 18),
                       SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           'Data dimuat dari assets/data/student_data.json',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 11,
-                          ),
+                          style: TextStyle(fontSize: 11),
                         ),
                       ),
                     ],
@@ -411,6 +392,76 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class FavoriteStatusCard extends StatelessWidget {
+  final bool isFavorite;
+
+  const FavoriteStatusCard({super.key, required this.isFavorite});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFFFF8FF),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.pink : Colors.grey,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isFavorite
+                    ? 'Status favorit: Dipilih'
+                    : 'Status favorit: Belum dipilih',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FavoriteActionCard extends StatelessWidget {
+  final bool isFavorite;
+  final VoidCallback onToggle;
+
+  const FavoriteActionCard({
+    super.key,
+    required this.isFavorite,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFFFF8FF),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                isFavorite
+                    ? 'Course sudah menjadi favorit'
+                    : 'Course belum menjadi favorit',
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: onToggle,
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+              tooltip: 'Toggle favorite',
+            ),
+          ],
+        ),
       ),
     );
   }
