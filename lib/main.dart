@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/course_provider.dart';
 import 'repositories/course_repository.dart';
-import 'screens/dashboard_page.dart';
+import 'screens/course_explorer_page.dart';
 import 'services/course_service.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: DashboardPage(),
+      home: CourseExplorerPage(),
     );
   }
 }

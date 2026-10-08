@@ -13,43 +13,63 @@ class FavoritesPage extends StatelessWidget {
     final provider = context.watch<CourseProvider>();
     final favorites = provider.favoriteCourses;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFF7FF),
-      appBar: AppBar(
-        title: const Text('Favorite Courses'),
-        backgroundColor: const Color(0xFFFFF7FF),
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: favorites.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.favorite_border, size: 48),
-                  SizedBox(height: 12),
-                  Text('Belum ada course favorite.'),
-                ],
+    if (favorites.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.favorite_border, size: 56),
+              SizedBox(height: 12),
+              Text(
+                'Belum ada course favorite.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: favorites.length,
-              itemBuilder: (context, index) {
-                final course = favorites[index];
+              SizedBox(height: 4),
+              Text(
+                'Tambahkan favorite dari halaman Courses.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
-                return CourseCard(
-                  course: course,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CourseDetailPage(course: course),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text(
+          'Favorite Courses',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+
+        const SizedBox(height: 4),
+
+        Text(
+          '${favorites.length} course disimpan',
+          style: const TextStyle(color: Colors.black54),
+        ),
+
+        const SizedBox(height: 16),
+
+        ...favorites.map(
+          (course) => CourseCard(
+            course: course,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CourseDetailPage(course: course),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
