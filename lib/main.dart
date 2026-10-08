@@ -1,22 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 
 import 'course_provider.dart';
 import 'models/course.dart';
+import 'services/course_service.dart';
 
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
-
-Future<Map<String, dynamic>> loadStudentData() async {
-  final jsonString = await rootBundle.loadString(
-    'assets/data/student_data.json',
-  );
-
-  return jsonDecode(jsonString) as Map<String, dynamic>;
-}
+const String studentSemester = 'Semester 5';
 
 void main() {
   runApp(
@@ -47,7 +38,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  late Future<Map<String, dynamic>> studentFuture;
+  late Future<List<Course>> courseFuture;
 
   // local state: hanya digunakan untuk mengatur
   // tampil/sembunyinya detail profil di DashboardPage.
@@ -56,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    studentFuture = loadStudentData();
+    courseFuture = CourseService().loadCourses();
   }
 
   // reusable widget 1
@@ -141,8 +132,8 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 0,
       ),
 
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: studentFuture,
+      body: FutureBuilder<List<Course>>(
+        future: courseFuture,
         builder: (context, snapshot) {
           // loading state
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -162,15 +153,7 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
 
-          final data = snapshot.data!;
-
-          final student = data['student'] as Map<String, dynamic>;
-
-          final coursesJson = data['courses'] as List<dynamic>;
-
-          final courses = coursesJson
-              .map((course) => Course.fromJson(course as Map<String, dynamic>))
-              .toList();
+          final courses = snapshot.data!;
 
           final int completed = courses
               .where((course) => course.status == 'done')
@@ -206,10 +189,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
                             const SizedBox(height: 12),
 
-                            Text(
-                              student['name'] as String,
+                            const Text(
+                              studentName,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -217,17 +200,17 @@ class _DashboardPageState extends State<DashboardPage> {
 
                             const SizedBox(height: 4),
 
-                            Text(
-                              student['nim'] as String,
-                              style: const TextStyle(fontSize: 12),
+                            const Text(
+                              studentId,
+                              style: TextStyle(fontSize: 12),
                             ),
 
                             const SizedBox(height: 4),
 
                             if (showProfileDetails) ...[
-                              Text(
-                                student['semester'] as String,
-                                style: const TextStyle(
+                              const Text(
+                                studentSemester,
+                                style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.black54,
                                 ),
