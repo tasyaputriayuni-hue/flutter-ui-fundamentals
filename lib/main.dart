@@ -291,6 +291,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 const SizedBox(height: 16),
 
+                const ProviderExperimentSection(),
+
+                const SizedBox(height: 16),
+
+                // summary
+
                 // summary
 
                 // summary
@@ -485,6 +491,82 @@ class _FavoriteCounterSectionState extends State<FavoriteCounterSection> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ProviderExperimentSection extends StatelessWidget {
+  const ProviderExperimentSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFFFF8FF),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Eksperimen Provider',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 8),
+
+            const ProviderFavoriteCount(),
+
+            const SizedBox(height: 8),
+
+            Consumer<CourseProvider>(
+              builder: (context, provider, child) {
+                final isFavorite = provider.isFavorite('MOB03');
+
+                return Row(
+                  children: [
+                    Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.pink : Colors.grey,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        isFavorite
+                            ? 'MOB03 sudah menjadi favorite'
+                            : 'MOB03 belum menjadi favorite',
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+
+            const SizedBox(height: 8),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                context.read<CourseProvider>().toggleFavorite('MOB03');
+              },
+              icon: const Icon(Icons.favorite),
+              label: const Text('Toggle Favorite MOB03'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProviderFavoriteCount extends StatelessWidget {
+  const ProviderFavoriteCount({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<CourseProvider>();
+
+    return Text(
+      'Jumlah favorite dari Provider: ${provider.favoriteCount}',
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
     );
   }
 }
