@@ -40,6 +40,10 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<Map<String, dynamic>> studentFuture;
 
+  // local state: hanya digunakan untuk mengatur
+  // tampil/sembunyinya detail profil di DashboardPage.
+  bool showProfileDetails = true;
+
   @override
   void initState() {
     super.initState();
@@ -240,22 +244,42 @@ class _DashboardPageState extends State<DashboardPage> {
 
                             const SizedBox(height: 4),
 
-                            // field tambahan JSON
-                            Text(
-                              student['semester'] as String,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: Colors.black54,
+                            if (showProfileDetails) ...[
+                              Text(
+                                student['semester'] as String,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.black54,
+                                ),
                               ),
-                            ),
+
+                              const SizedBox(height: 8),
+
+                              const Text(
+                                'Mahasiswa yang tertarik pada pemrograman mobile dan desain.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ],
 
                             const SizedBox(height: 8),
 
-                            const Text(
-                              'Mahasiswa yang tertarik pada pemrograman mobile dan desain.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 10,
+                            TextButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  showProfileDetails = !showProfileDetails;
+                                });
+                              },
+                              icon: Icon(
+                                showProfileDetails
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                size: 18,
+                              ),
+                              label: Text(
+                                showProfileDetails
+                                    ? 'Sembunyikan Detail'
+                                    : 'Tampilkan Detail',
                               ),
                             ),
                           ],
