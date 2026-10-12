@@ -67,6 +67,8 @@ class CoursesPage extends StatelessWidget {
                     return CourseCard(
                       course: course,
                       onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+
                         final result = await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
@@ -74,14 +76,16 @@ class CoursesPage extends StatelessWidget {
                           ),
                         );
 
-                        if (result == true && context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${course.title} dipilih sebagai favorite.',
+                        if (result == true) {
+                          messenger
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${course.title} dipilih sebagai favorite.',
+                                ),
                               ),
-                            ),
-                          );
+                            );
                         }
                       },
                     );
