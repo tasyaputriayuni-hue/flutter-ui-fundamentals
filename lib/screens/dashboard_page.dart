@@ -35,6 +35,18 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Container(
+                width: 500,
+                padding: const EdgeInsets.all(16),
+                child: const Text('$studentId - $studentName'),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
           Center(
             child: SizedBox(
               width: 280,
