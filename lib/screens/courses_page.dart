@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/course.dart';
 import '../providers/course_provider.dart';
 import '../widgets/course_card.dart';
 import 'course_detail_page.dart';
@@ -8,13 +9,56 @@ import 'course_detail_page.dart';
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
 
-class CoursesPage extends StatelessWidget {
+class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
+
+  @override
+  State<CoursesPage> createState() => _CoursesPageState();
+}
+
+class _CoursesPageState extends State<CoursesPage> {
+  bool isNavigating = false;
 
   int columnsFor(double width) {
     if (width < 600) return 1;
     if (width < 840) return 2;
     return 3;
+  }
+
+  Future<void> openCourseDetail(
+    BuildContext context,
+    Course course,
+    Map<String, dynamic> courseData,
+  ) async {
+    if (isNavigating) return;
+
+    setState(() => isNavigating = true);
+
+    try {
+      final result = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CourseDetailPage(course: courseData),
+        ),
+      );
+
+      if (result == true && context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text('${course.title} dipilih sebagai favorite.'),
+            ),
+          );
+
+        final courseProvider = context.read<CourseProvider>();
+        if (!courseProvider.isFavorite(course.code)) {
+          courseProvider.toggleFavorite(course.code);
+        }
+      }
+    } finally {
+      if (mounted) setState(() => isNavigating = false);
+    }
   }
 
   @override
@@ -89,31 +133,11 @@ class CoursesPage extends StatelessWidget {
 
                     return CourseCard(
                       course: course,
-                      onTap: () async {
-                        final result = await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CourseDetailPage(course: courseData),
-                          ),
-                        );
-
-                        if (result == true && context.mounted) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '${course.title} dipilih sebagai favorite.',
-                                ),
-                              ),
-                            );
-
-                          final courseProvider = context.read<CourseProvider>();
-                          if (!courseProvider.isFavorite(course.code)) {
-                            courseProvider.toggleFavorite(course.code);
-                          }
-                        }
-                      },
+                      onTap: () => openCourseDetail(
+                        context,
+                        course,
+                        courseData,
+                      ),
                     );
                   },
                 ),
