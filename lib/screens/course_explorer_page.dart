@@ -70,20 +70,11 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
         return Scaffold(
           backgroundColor: const Color(0xFFFFF7FF),
           appBar: AppBar(
-            backgroundColor: const Color(0xFFFFF7FF),
+            backgroundColor: const Color(0xFFEADDFF),
             surfaceTintColor: Colors.transparent,
-            title: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Course Explorer v2',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Putu Tasya Putri Ayuni • 2415051031',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
-                ),
-              ],
+            title: const Text(
+              'Course Explorer v2',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           body: useNavigationRail
