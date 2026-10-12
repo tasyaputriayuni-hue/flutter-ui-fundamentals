@@ -60,10 +60,17 @@ class FavoritesPage extends StatelessWidget {
           (course) => CourseCard(
             course: course,
             onTap: () {
+              final courseData = <String, dynamic>{
+                'title': course.title,
+                'code': course.code,
+                'credits': course.credits,
+                'status': course.status,
+              };
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => CourseDetailPage(course: course),
+                  builder: (_) => CourseDetailPage(course: courseData),
                 ),
               );
             },
