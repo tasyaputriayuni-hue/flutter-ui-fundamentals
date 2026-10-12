@@ -38,7 +38,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Row(
             children: [
               Container(
-                width: 500,
+                width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 child: const Text('$studentId - $studentName'),
               ),
