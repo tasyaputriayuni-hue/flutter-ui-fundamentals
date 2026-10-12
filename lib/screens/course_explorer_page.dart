@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../providers/course_provider.dart';
 import 'courses_page.dart';
-import 'favorites_page.dart';
 import 'home_page.dart';
+import 'profile_page.dart';
 
 class CourseExplorerPage extends StatefulWidget {
   const CourseExplorerPage({super.key});
@@ -19,7 +19,7 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
   final List<Widget> pages = const [
     HomePage(),
     CoursesPage(),
-    FavoritesPage(),
+    ProfilePage(),
   ];
 
   void changePage(int index) {
@@ -91,14 +91,14 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
                           label: Text('Home'),
                         ),
                         NavigationRailDestination(
-                          icon: Icon(Icons.menu_book_outlined),
-                          selectedIcon: Icon(Icons.menu_book),
+                          icon: Icon(Icons.school_outlined),
+                          selectedIcon: Icon(Icons.school),
                           label: Text('Courses'),
                         ),
                         NavigationRailDestination(
-                          icon: Icon(Icons.favorite_border),
-                          selectedIcon: Icon(Icons.favorite),
-                          label: Text('Favorites'),
+                          icon: Icon(Icons.person_outline),
+                          selectedIcon: Icon(Icons.person),
+                          label: Text('Profile'),
                         ),
                       ],
                     ),
@@ -119,14 +119,14 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
                       label: 'Home',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.menu_book_outlined),
-                      selectedIcon: Icon(Icons.menu_book),
+                      icon: Icon(Icons.school_outlined),
+                      selectedIcon: Icon(Icons.school),
                       label: 'Courses',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.favorite_border),
-                      selectedIcon: Icon(Icons.favorite),
-                      label: 'Favorites',
+                      icon: Icon(Icons.person_outline),
+                      selectedIcon: Icon(Icons.person),
+                      label: 'Profile',
                     ),
                   ],
                 ),
