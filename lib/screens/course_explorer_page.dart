@@ -34,7 +34,7 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool useNavigationRail = constraints.maxWidth >= 720;
+        final bool useNavigationRail = constraints.maxWidth >= 840;
 
         Widget content;
 
