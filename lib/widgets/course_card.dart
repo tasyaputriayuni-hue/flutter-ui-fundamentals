@@ -33,6 +33,15 @@ class CourseCard extends StatelessWidget {
       color: const Color(0xFFFFF8FF),
       child: ListTile(
         onTap: onTap,
+        onLongPress: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${course.title} • ${course.code} • ${course.credits} SKS • $statusText',
+              ),
+            ),
+          );
+        },
         leading: Icon(Icons.menu_book, color: statusColor),
         title: Text(course.title),
         subtitle: Text('${course.code} • ${course.credits} SKS • $statusText'),
