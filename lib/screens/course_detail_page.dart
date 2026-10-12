@@ -68,14 +68,13 @@ class CourseDetailPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      context.read<CourseProvider>().toggleFavorite(code);
+                      if (!isFavorite) {
+                        context.read<CourseProvider>().toggleFavorite(code);
+                      }
+                      Navigator.pop(context, true);
                     },
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                    ),
-                    label: Text(
-                      isFavorite ? 'Hapus dari Favorite' : 'Tambah ke Favorite',
-                    ),
+                    icon: const Icon(Icons.favorite_border),
+                    label: const Text('Pilih / Favorite'),
                   ),
                 ),
               ],

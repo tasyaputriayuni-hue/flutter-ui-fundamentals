@@ -66,13 +66,23 @@ class CoursesPage extends StatelessWidget {
 
                     return CourseCard(
                       course: course,
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
                             builder: (_) => CourseDetailPage(course: courseData),
                           ),
                         );
+
+                        if (result == true && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${course.title} dipilih sebagai favorite.',
+                              ),
+                            ),
+                          );
+                        }
                       },
                     );
                   },
