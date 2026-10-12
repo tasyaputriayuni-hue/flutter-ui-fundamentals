@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../providers/course_provider.dart';
 import 'courses_page.dart';
-import 'dashboard_page.dart';
 import 'favorites_page.dart';
+import 'home_page.dart';
 
 class CourseExplorerPage extends StatefulWidget {
   const CourseExplorerPage({super.key});
@@ -17,7 +17,7 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
   int selectedIndex = 0;
 
   final List<Widget> pages = const [
-    DashboardPage(),
+    HomePage(),
     CoursesPage(),
     FavoritesPage(),
   ];
