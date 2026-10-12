@@ -64,6 +64,20 @@ class _DashboardPageState extends State<DashboardPage> {
 
           const SizedBox(height: 16),
 
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 600) {
+                return const CompactLayout();
+              } else if (constraints.maxWidth < 840) {
+                return const MediumLayout();
+              } else {
+                return const ExpandedLayout();
+              }
+            },
+          ),
+
+          const SizedBox(height: 16),
+
           Center(
             child: SizedBox(
               width: 280,
@@ -205,6 +219,90 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class CompactLayout extends StatelessWidget {
+  const CompactLayout({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF0F7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF4B9D2)),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.phone_android),
+          SizedBox(height: 6),
+          Text('Compact Layout', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('$studentId - $studentName'),
+        ],
+      ),
+    );
+  }
+}
+
+class MediumLayout extends StatelessWidget {
+  const MediumLayout({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F0FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFC9BFF3)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.tablet_mac),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Medium Layout', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('$studentId - $studentName'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ExpandedLayout extends StatelessWidget {
+  const ExpandedLayout({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF7FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFB8D6F2)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.desktop_windows),
+          SizedBox(width: 12),
+          Text('Expanded Layout', style: TextStyle(fontWeight: FontWeight.bold)),
+          Spacer(),
+          Text('$studentId - $studentName'),
         ],
       ),
     );
