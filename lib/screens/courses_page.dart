@@ -57,13 +57,20 @@ class CoursesPage extends StatelessWidget {
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
                     final course = courses[index];
+                    final courseData = <String, dynamic>{
+                      'title': course.title,
+                      'code': course.code,
+                      'credits': course.credits,
+                      'status': course.status,
+                    };
+
                     return CourseCard(
                       course: course,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => CourseDetailPage(course: course),
+                            builder: (_) => CourseDetailPage(course: courseData),
                           ),
                         );
                       },
