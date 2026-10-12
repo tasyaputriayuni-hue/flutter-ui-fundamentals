@@ -5,45 +5,76 @@ import '../providers/course_provider.dart';
 import '../widgets/course_card.dart';
 import 'course_detail_page.dart';
 
+const String studentName = 'Putu Tasya Putri Ayuni';
+const String studentId = '2415051031';
+
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
+
+  int columnsFor(double width) {
+    if (width < 600) return 1;
+    if (width < 840) return 2;
+    return 3;
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CourseProvider>();
     final courses = provider.courses;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text(
-          'Daftar Course',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = columnsFor(constraints.maxWidth);
 
-        const SizedBox(height: 4),
-
-        Text(
-          '${courses.length} course tersedia',
-          style: const TextStyle(color: Colors.black54),
-        ),
-
-        const SizedBox(height: 16),
-
-        ...courses.map(
-          (course) => CourseCard(
-            course: course,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CourseDetailPage(course: course),
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '$studentId - $studentName',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Daftar Course',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${courses.length} course tersedia • $columns kolom',
+                style: const TextStyle(color: Colors.black54),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 96,
+                  ),
+                  itemCount: courses.length,
+                  itemBuilder: (context, index) {
+                    final course = courses[index];
+                    return CourseCard(
+                      course: course,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CourseDetailPage(course: course),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
