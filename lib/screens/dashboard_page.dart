@@ -35,20 +35,6 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Home',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 4),
-
-          const Text(
-            'Ringkasan Course Explorer',
-            style: TextStyle(color: Colors.black54),
-          ),
-
-          const SizedBox(height: 20),
-
           Center(
             child: SizedBox(
               width: 280,
