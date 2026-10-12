@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../providers/course_provider.dart';
 
 const String studentName = 'Putu Tasya Putri Ayuni';
 const String studentId = '2415051031';
@@ -13,20 +10,13 @@ class CourseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CourseProvider>();
     final code = course['code'] as String;
-    final isFavorite = provider.isFavorite(code);
-
-    String statusText;
     final status = course['status'];
-
-    if (status == 'done') {
-      statusText = 'Selesai';
-    } else if (status == 'active') {
-      statusText = 'Aktif';
-    } else {
-      statusText = 'Belum';
-    }
+    final statusText = status == 'done'
+        ? 'Selesai'
+        : status == 'active'
+            ? 'Aktif'
+            : 'Belum';
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF7FF),
@@ -45,18 +35,9 @@ class CourseDetailPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '$studentId - $studentName',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
+                const Text('$studentId - $studentName', style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
-                Text(
-                  course['title'] as String,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(course['title'] as String, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 Text('Kode: $code'),
                 const SizedBox(height: 8),
@@ -67,12 +48,7 @@ class CourseDetailPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      if (!isFavorite) {
-                        context.read<CourseProvider>().toggleFavorite(code);
-                      }
-                      Navigator.pop(context, true);
-                    },
+                    onPressed: () => Navigator.pop(context, true),
                     icon: const Icon(Icons.favorite_border),
                     label: const Text('Pilih / Favorite'),
                   ),
