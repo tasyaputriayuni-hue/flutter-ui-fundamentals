@@ -25,6 +25,14 @@ class _DashboardPageState extends State<DashboardPage> {
     final size = MediaQuery.of(context).size;
     final orientation = MediaQuery.of(context).orientation;
     final layoutCategory = size.width < 600 ? 'Compact' : 'Wide';
+    const skills = [
+      'Flutter',
+      'Dart',
+      'Responsive UI',
+      'Navigation',
+      'Provider',
+      'Git',
+    ];
 
     final completed = courses.where((course) => course.status == 'done').length;
 
@@ -74,6 +82,68 @@ class _DashboardPageState extends State<DashboardPage> {
                 return const ExpandedLayout();
               }
             },
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            'Komposisi Fleksibel',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF4FF),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFB9D7F0)),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Panel Utama',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 4),
+                      Text('$studentId - $studentName'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF0F7),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF4B9D2)),
+                  ),
+                  child: const Text(
+                    'Panel Pendamping',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            'Skills',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: skills.map((skill) => Chip(label: Text(skill))).toList(),
           ),
 
           const SizedBox(height: 16),
