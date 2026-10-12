@@ -22,6 +22,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final provider = context.watch<CourseProvider>();
     final courses = provider.courses;
+    final size = MediaQuery.of(context).size;
+    final orientation = MediaQuery.of(context).orientation;
+    final layoutCategory = size.width < 600 ? 'Compact' : 'Wide';
 
     final completed = courses.where((course) => course.status == 'done').length;
 
@@ -35,15 +38,28 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Text('$studentId - $studentName'),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3E8FF),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFD7C5EF)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '$studentId - $studentName',
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text('Width: ${size.width.toStringAsFixed(0)}'),
+                Text('Height: ${size.height.toStringAsFixed(0)}'),
+                Text('Orientation: $orientation'),
+                Text('Layout: $layoutCategory'),
+              ],
+            ),
           ),
 
           const SizedBox(height: 16),
