@@ -17,6 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final commentController = TextEditingController();
 
   String? submittedFeedback;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -26,13 +27,46 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void submitFeedback() {
+  Future<void> submitFeedback() async {
     if (!formKey.currentState!.validate()) return;
 
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Konfirmasi'),
+        content: const Text('Kirim feedback ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Kirim'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
     setState(() {
+      isLoading = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
       submittedFeedback =
           '${nameController.text} (${nimController.text}): ${commentController.text}';
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Data berhasil disimpan')),
+    );
   }
 
   @override
@@ -119,9 +153,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: submitFeedback,
+                  onPressed: isLoading ? null : submitFeedback,
                   child: const Text('Kirim Feedback'),
                 ),
+                if (isLoading) ...[
+                  const SizedBox(height: 16),
+                  const Center(child: CircularProgressIndicator()),
+                ],
               ],
             ),
           ),
