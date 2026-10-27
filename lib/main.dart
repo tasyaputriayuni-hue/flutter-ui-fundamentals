@@ -279,6 +279,50 @@ class _CourseListScreenState extends State<CourseListScreen> {
     );
   }
 
+  // Fungsi untuk menampilkan Dialog Konfirmasi Hapus (DELETE)
+  void _confirmDeleteCourse(Course course) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Hapus'),
+          content: Text('Apakah Anda yakin ingin menghapus course "${course.title}"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              onPressed: () async {
+                try {
+                  final targetId = course.id ?? 1;
+                  await _apiService.deleteCourse(targetId);
+
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  _loadData();
+
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Course berhasil dihapus!')),
+                  );
+                } catch (e) {
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Gagal menghapus: $e')),
+                  );
+                }
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -313,9 +357,18 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 ),
                 title: Text(course.title),
                 subtitle: Text('Code: ${course.code} | SKS: ${course.credits} | Status: ${course.status}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditCourseDialog(course),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => _showEditCourseDialog(course),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _confirmDeleteCourse(course),
+                    ),
+                  ],
                 ),
               );
             },
