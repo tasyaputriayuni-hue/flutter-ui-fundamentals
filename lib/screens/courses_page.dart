@@ -130,9 +130,12 @@ class _CoursesPageState extends State<CoursesPage> {
                         controller: creditsController,
                         decoration: const InputDecoration(labelText: 'User ID'),
                         keyboardType: TextInputType.number,
-                        validator: (value) => int.tryParse(value ?? '') == null
-                            ? 'User ID harus berupa angka'
-                            : null,
+                        validator: (value) {
+                          final credits = int.tryParse(value ?? '');
+                          return credits == null || credits <= 0
+                              ? 'Credits harus berupa angka lebih dari 0'
+                              : null;
+                        },
                       ),
                       DropdownButtonFormField<String>(
                         initialValue: status,
@@ -262,9 +265,12 @@ class _CoursesPageState extends State<CoursesPage> {
                         controller: creditsController,
                         decoration: const InputDecoration(labelText: 'User ID'),
                         keyboardType: TextInputType.number,
-                        validator: (value) => int.tryParse(value ?? '') == null
-                            ? 'User ID harus berupa angka'
-                            : null,
+                        validator: (value) {
+                          final credits = int.tryParse(value ?? '');
+                          return credits == null || credits <= 0
+                              ? 'Credits harus berupa angka lebih dari 0'
+                              : null;
+                        },
                       ),
                       DropdownButtonFormField<String>(
                         initialValue: status,
