@@ -64,6 +64,7 @@ class _CoursesPageState extends State<CoursesPage> {
     final codeController = TextEditingController();
     final titleController = TextEditingController();
     final creditsController = TextEditingController(text: '1');
+    var status = 'active';
     var isSaving = false;
 
     showDialog<void>(
@@ -79,7 +80,7 @@ class _CoursesPageState extends State<CoursesPage> {
                 code: codeController.text.trim(),
                 title: titleController.text.trim(),
                 credits: int.parse(creditsController.text),
-                status: 'active',
+                status: status,
               );
               final success = await context.read<CourseProvider>().createCourse(
                 course,
@@ -132,6 +133,28 @@ class _CoursesPageState extends State<CoursesPage> {
                         validator: (value) => int.tryParse(value ?? '') == null
                             ? 'User ID harus berupa angka'
                             : null,
+                      ),
+                      DropdownButtonFormField<String>(
+                        initialValue: status,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'planned',
+                            child: Text('Planned'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text('Active'),
+                          ),
+                          DropdownMenuItem(value: 'done', child: Text('Done')),
+                        ],
+                        onChanged: isSaving
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  setDialogState(() => status = value);
+                                }
+                              },
                       ),
                     ],
                   ),
