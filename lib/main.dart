@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'models/course.dart';
 import 'services/course_api_service.dart';
 
@@ -30,8 +31,9 @@ class CourseListScreen extends StatefulWidget {
 }
 
 class _CourseListScreenState extends State<CourseListScreen> {
-  final CourseApiService _apiService =
-      CourseApiService('https://jsonplaceholder.typicode.com');
+  final CourseApiService _apiService = CourseApiService(
+    'https://jsonplaceholder.typicode.com',
+  );
   late Future<List<Course>> _futureCourses;
 
   @override
@@ -53,9 +55,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Terjadi Kesalahan: ${snapshot.error}'),
-            );
+            return Center(child: Text('Terjadi Kesalahan: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('Data course kosong'));
           }
@@ -67,7 +67,9 @@ class _CourseListScreenState extends State<CourseListScreen> {
               final course = courses[index];
               return ListTile(
                 title: Text(course.title),
-                subtitle: Text(course.description ?? ''),
+                subtitle: Text(
+                  'Code: ${course.code} | Credits: ${course.credits} | Status: ${course.status}',
+                ),
               );
             },
           );
