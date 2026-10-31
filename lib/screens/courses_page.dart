@@ -271,6 +271,47 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 
+  void _confirmDeleteCourse(BuildContext context, Course course) {
+    if (course.id == null) return;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Hapus Post?'),
+        content: Text('Hapus "${course.title}" dari daftar?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await context.read<CourseProvider>().deleteCourse(
+                course.id!,
+              );
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Post berhasil dihapus.'
+                        : 'Gagal menghapus post.',
+                  ),
+                ),
+              );
+            },
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CourseProvider>();
@@ -360,6 +401,7 @@ class _CoursesPageState extends State<CoursesPage> {
                       onTap: () =>
                           openCourseDetail(context, course, courseData),
                       onEdit: () => _showEditCourseDialog(context, course),
+                      onDelete: () => _confirmDeleteCourse(context, course),
                     );
                   },
                 ),

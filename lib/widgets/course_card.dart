@@ -8,8 +8,15 @@ class CourseCard extends StatelessWidget {
   final Course course;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const CourseCard({super.key, required this.course, this.onTap, this.onEdit});
+  const CourseCard({
+    super.key,
+    required this.course,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +70,12 @@ class CourseCard extends StatelessWidget {
                   tooltip: 'Edit course',
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                ),
+              if (onDelete != null)
+                IconButton(
+                  tooltip: 'Hapus course',
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
                 ),
               IconButton(
                 tooltip: isFavorite

@@ -77,6 +77,14 @@ class CourseApiService {
     );
   }
 
+  Future<void> deleteCourse(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/posts/$id'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal menghapus post');
+    }
+  }
+
   String _formatTitle(String title) {
     if (title.isEmpty) return title;
     return title[0].toUpperCase() + title.substring(1);
