@@ -8,7 +8,11 @@ class CourseSupabaseService implements CourseDataSource {
 
   @override
   Future<List<Course>> getCourses() async {
-    final data = await supabase.from('courses').select().order('id');
+    final data = await supabase
+        .from('courses')
+        .select()
+        .order('id')
+        .timeout(const Duration(seconds: 15));
 
     return (data as List)
         .map((row) => Course.fromJson(row as Map<String, dynamic>))
