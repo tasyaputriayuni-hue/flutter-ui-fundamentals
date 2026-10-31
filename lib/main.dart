@@ -6,8 +6,17 @@ import 'repositories/course_repository.dart';
 import 'screens/course_explorer_page.dart';
 import 'services/course_api_service.dart';
 
-void main() {
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   final apiService = CourseApiService('https://jsonplaceholder.typicode.com');
+
+  await Supabase.initialize(
+    url: 'https://ebpnfhozjjtrxvcwahbp.supabase.co',
+    publishableKey: 'sb_publishable_tiBe9vzG3jt4b3eY0J9o_g_mz7veTnp',
+  );
 
   runApp(
     ChangeNotifierProvider(
