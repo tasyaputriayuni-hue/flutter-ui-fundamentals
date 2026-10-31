@@ -37,9 +37,7 @@ class _CoursesPageState extends State<CoursesPage> {
     try {
       final result = await Navigator.push<bool>(
         context,
-        MaterialPageRoute(
-          builder: (_) => CourseDetailPage(course: courseData),
-        ),
+        MaterialPageRoute(builder: (_) => CourseDetailPage(course: courseData)),
       );
 
       if (result == true && context.mounted) {
@@ -119,7 +117,7 @@ class _CoursesPageState extends State<CoursesPage> {
                     crossAxisCount: columns,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    mainAxisExtent: 96,
+                    mainAxisExtent: 128,
                   ),
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
@@ -133,11 +131,8 @@ class _CoursesPageState extends State<CoursesPage> {
 
                     return CourseCard(
                       course: course,
-                      onTap: () => openCourseDetail(
-                        context,
-                        course,
-                        courseData,
-                      ),
+                      onTap: () =>
+                          openCourseDetail(context, course, courseData),
                     );
                   },
                 ),

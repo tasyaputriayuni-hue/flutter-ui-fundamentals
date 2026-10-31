@@ -18,11 +18,16 @@ class CourseApiService {
     return data.map((e) {
       final post = e as Map<String, dynamic>;
       return Course(
-        code: 'POST-${post['id']}',
-        title: post['title'] as String,
+        code: 'Post #${post['id']}',
+        title: _formatTitle(post['title'] as String),
         credits: post['userId'] as int,
         status: 'active',
       );
     }).toList();
+  }
+
+  String _formatTitle(String title) {
+    if (title.isEmpty) return title;
+    return title[0].toUpperCase() + title.substring(1);
   }
 }

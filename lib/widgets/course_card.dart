@@ -12,47 +12,64 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String statusText;
-    Color statusColor;
-
-    if (course.status == 'done') {
-      statusText = 'Selesai';
-      statusColor = Colors.green;
-    } else if (course.status == 'active') {
-      statusText = 'Aktif';
-      statusColor = Colors.blue;
-    } else {
-      statusText = 'Belum';
-      statusColor = Colors.orange;
-    }
-
-    final provider = context.watch<CourseProvider>();
-    final isFavorite = provider.isFavorite(course.code);
+    final statusText = course.status == 'done'
+        ? 'Selesai'
+        : course.status == 'active'
+        ? 'Aktif'
+        : 'Belum';
+    final statusColor = course.status == 'done'
+        ? Colors.green
+        : course.status == 'active'
+        ? Colors.blue
+        : Colors.orange;
+    final isFavorite = context.watch<CourseProvider>().isFavorite(course.code);
 
     return Card(
       color: const Color(0xFFFFF8FF),
-      child: ListTile(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTap,
-        onLongPress: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${course.title} • ${course.code} • ${course.credits} SKS • $statusText',
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.menu_book, color: statusColor),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${course.code} • ${course.credits} user • $statusText',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-        leading: Icon(Icons.menu_book, color: statusColor),
-        title: Text(course.title),
-        subtitle: Text('${course.code} • ${course.credits} SKS • $statusText'),
-        trailing: IconButton(
-          tooltip: isFavorite ? 'Hapus dari favorite' : 'Tambah ke favorite',
-          onPressed: () {
-            context.read<CourseProvider>().toggleFavorite(course.code);
-          },
-          icon: Icon(
-            isFavorite ? Icons.favorite : Icons.favorite_border,
-            color: isFavorite ? Colors.pink : Colors.grey,
+              IconButton(
+                tooltip: isFavorite
+                    ? 'Hapus dari favorite'
+                    : 'Tambah ke favorite',
+                onPressed: () {
+                  context.read<CourseProvider>().toggleFavorite(course.code);
+                },
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.pink : Colors.grey,
+                ),
+              ),
+            ],
           ),
         ),
       ),
