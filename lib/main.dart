@@ -5,7 +5,6 @@ import 'providers/course_provider.dart';
 import 'repositories/course_repository.dart';
 import 'screens/course_explorer_page.dart';
 import 'services/course_api_service.dart';
-import 'services/course_service.dart';
 
 void main() {
   final apiService = CourseApiService('https://jsonplaceholder.typicode.com');
@@ -13,8 +12,7 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) =>
-          CourseProvider(CourseRepository(CourseService(apiService)))
-            ..loadCourses(),
+          CourseProvider(CourseRepository(apiService))..loadCourses(),
       child: const MyApp(),
     ),
   );
