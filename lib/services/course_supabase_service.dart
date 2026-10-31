@@ -32,8 +32,12 @@ class CourseSupabaseService implements CourseDataSource {
   }
 
   @override
-  Future<void> updateCourse(int id, Course course) {
-    throw UnimplementedError('UPDATE Supabase dikerjakan pada Tahap 14');
+  Future<void> updateCourse(int id, Course course) async {
+    await supabase
+        .from('courses')
+        .update(course.toJson())
+        .eq('id', id)
+        .timeout(const Duration(seconds: 15));
   }
 
   @override

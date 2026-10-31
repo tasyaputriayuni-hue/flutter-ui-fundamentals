@@ -192,6 +192,7 @@ class _CoursesPageState extends State<CoursesPage> {
     final creditsController = TextEditingController(
       text: course.credits.toString(),
     );
+    var status = course.status;
     var isSaving = false;
 
     showDialog<void>(
@@ -210,7 +211,7 @@ class _CoursesPageState extends State<CoursesPage> {
                 code: codeController.text.trim(),
                 title: titleController.text.trim(),
                 credits: int.parse(creditsController.text),
-                status: course.status,
+                status: status,
               );
               final success = await context.read<CourseProvider>().updateCourse(
                 course.id!,
@@ -264,6 +265,28 @@ class _CoursesPageState extends State<CoursesPage> {
                         validator: (value) => int.tryParse(value ?? '') == null
                             ? 'User ID harus berupa angka'
                             : null,
+                      ),
+                      DropdownButtonFormField<String>(
+                        initialValue: status,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'planned',
+                            child: Text('Planned'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text('Active'),
+                          ),
+                          DropdownMenuItem(value: 'done', child: Text('Done')),
+                        ],
+                        onChanged: isSaving
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  setDialogState(() => status = value);
+                                }
+                              },
                       ),
                     ],
                   ),
