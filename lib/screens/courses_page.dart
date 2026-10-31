@@ -162,6 +162,115 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 
+  void _showEditCourseDialog(BuildContext context, Course course) {
+    final formKey = GlobalKey<FormState>();
+    final codeController = TextEditingController(text: course.code);
+    final titleController = TextEditingController(text: course.title);
+    final creditsController = TextEditingController(
+      text: course.credits.toString(),
+    );
+    var isSaving = false;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> save() async {
+              if (!formKey.currentState!.validate() || course.id == null) {
+                return;
+              }
+              setDialogState(() => isSaving = true);
+
+              final updated = Course(
+                id: course.id,
+                code: codeController.text.trim(),
+                title: titleController.text.trim(),
+                credits: int.parse(creditsController.text),
+                status: course.status,
+              );
+              final success = await context.read<CourseProvider>().updateCourse(
+                course.id!,
+                updated,
+              );
+
+              if (!dialogContext.mounted) return;
+              if (success) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(content: Text('Post berhasil diperbarui.')),
+                );
+              } else {
+                setDialogState(() => isSaving = false);
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(content: Text('Gagal memperbarui post.')),
+                );
+              }
+            }
+
+            return AlertDialog(
+              title: Text('Edit ${course.code}'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: codeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Code / Body',
+                        ),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Code wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Judul'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Judul wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: creditsController,
+                        decoration: const InputDecoration(labelText: 'User ID'),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => int.tryParse(value ?? '') == null
+                            ? 'User ID harus berupa angka'
+                            : null,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext),
+                  child: const Text('Batal'),
+                ),
+                FilledButton(
+                  onPressed: isSaving ? null : save,
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CourseProvider>();
@@ -250,6 +359,7 @@ class _CoursesPageState extends State<CoursesPage> {
                       course: course,
                       onTap: () =>
                           openCourseDetail(context, course, courseData),
+                      onEdit: () => _showEditCourseDialog(context, course),
                     );
                   },
                 ),

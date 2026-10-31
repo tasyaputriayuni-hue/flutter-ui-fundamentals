@@ -18,6 +18,7 @@ class CourseApiService {
     return data.map((e) {
       final post = e as Map<String, dynamic>;
       return Course(
+        id: post['id'] as int,
         code: 'Post #${post['id']}',
         title: _formatTitle(post['title'] as String),
         credits: post['userId'] as int,
@@ -45,6 +46,31 @@ class CourseApiService {
     return Course(
       id: data['id'] as int?,
       code: 'Post #${data['id']}',
+      title: _formatTitle(data['title'] as String),
+      credits: data['userId'] as int? ?? course.credits,
+      status: 'active',
+    );
+  }
+
+  Future<Course> updateCourse(int id, Course course) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/posts/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'title': course.title,
+        'body': course.code,
+        'userId': course.credits,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal memperbarui post');
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return Course(
+      id: data['id'] as int? ?? id,
+      code: 'Post #${data['id'] ?? id}',
       title: _formatTitle(data['title'] as String),
       credits: data['userId'] as int? ?? course.credits,
       status: 'active',

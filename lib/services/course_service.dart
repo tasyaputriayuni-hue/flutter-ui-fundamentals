@@ -13,4 +13,8 @@ class CourseService {
   Future<Course> createCourse(Course course) {
     return apiService.createCourse(course);
   }
+
+  Future<Course> updateCourse(int id, Course course) {
+    return apiService.updateCourse(id, course);
+  }
 }

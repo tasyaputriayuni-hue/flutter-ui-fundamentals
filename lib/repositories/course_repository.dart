@@ -13,4 +13,8 @@ class CourseRepository {
   Future<Course> createCourse(Course course) {
     return courseService.createCourse(course);
   }
+
+  Future<Course> updateCourse(int id, Course course) {
+    return courseService.updateCourse(id, course);
+  }
 }

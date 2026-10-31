@@ -7,8 +7,9 @@ import '../providers/course_provider.dart';
 class CourseCard extends StatelessWidget {
   final Course course;
   final VoidCallback? onTap;
+  final VoidCallback? onEdit;
 
-  const CourseCard({super.key, required this.course, this.onTap});
+  const CourseCard({super.key, required this.course, this.onTap, this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +58,12 @@ class CourseCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (onEdit != null)
+                IconButton(
+                  tooltip: 'Edit course',
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                ),
               IconButton(
                 tooltip: isFavorite
                     ? 'Hapus dari favorite'

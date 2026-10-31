@@ -60,6 +60,24 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateCourse(int id, Course course) async {
+    try {
+      final updatedCourse = await repository.updateCourse(id, course);
+      final index = _courses.indexWhere((item) => item.id == id);
+      if (index >= 0) {
+        final updated = List<Course>.from(_courses);
+        updated[index] = updatedCourse;
+        _courses = updated;
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   void toggleFavorite(String code) {
     if (_favorites.contains(code)) {
       _favorites.remove(code);
