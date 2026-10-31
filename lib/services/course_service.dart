@@ -1,20 +1,12 @@
-import 'dart:convert';
-
-import 'package:flutter/services.dart' show rootBundle;
-
 import '../models/course.dart';
+import 'course_api_service.dart';
 
 class CourseService {
+  final CourseApiService apiService;
+
+  CourseService(this.apiService);
+
   Future<List<Course>> loadCourses() async {
-    final jsonString = await rootBundle.loadString(
-      'assets/data/student_data.json',
-    );
-
-    final data = jsonDecode(jsonString) as Map<String, dynamic>;
-    final coursesJson = data['courses'] as List<dynamic>;
-
-    return coursesJson
-        .map((course) => Course.fromJson(course as Map<String, dynamic>))
-        .toList();
+    return apiService.getCourses();
   }
 }
