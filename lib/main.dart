@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'providers/course_provider.dart';
 import 'repositories/course_repository.dart';
 import 'screens/course_explorer_page.dart';
-import 'services/course_api_service.dart';
+import 'services/course_supabase_service.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final apiService = CourseApiService('https://jsonplaceholder.typicode.com');
+  final dataSource = CourseSupabaseService();
 
   await Supabase.initialize(
     url: 'https://ebpnfhozjjtrxvcwahbp.supabase.co',
@@ -21,7 +21,7 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) =>
-          CourseProvider(CourseRepository(apiService))..loadCourses(),
+          CourseProvider(CourseRepository(dataSource))..loadCourses(),
       child: const MyApp(),
     ),
   );
