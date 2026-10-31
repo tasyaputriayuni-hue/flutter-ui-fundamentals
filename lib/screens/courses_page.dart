@@ -416,6 +416,12 @@ class _CoursesPageState extends State<CoursesPage> {
                     icon: const Icon(Icons.add),
                     label: const Text('Tambah'),
                   ),
+                  const SizedBox(width: 8),
+                  IconButton.outlined(
+                    tooltip: 'Refresh data',
+                    onPressed: provider.loadCourses,
+                    icon: const Icon(Icons.refresh),
+                  ),
                 ],
               ),
               const SizedBox(height: 4),
@@ -425,32 +431,62 @@ class _CoursesPageState extends State<CoursesPage> {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    mainAxisExtent: 128,
-                  ),
-                  itemCount: courses.length,
-                  itemBuilder: (context, index) {
-                    final course = courses[index];
-                    final courseData = <String, dynamic>{
-                      'title': course.title,
-                      'code': course.code,
-                      'credits': course.credits,
-                      'status': course.status,
-                    };
+                child: courses.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.school_outlined, size: 56),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Belum ada course',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Tambahkan course atau refresh data dari Supabase.',
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: provider.loadCourses,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Refresh'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: 128,
+                        ),
+                        itemCount: courses.length,
+                        itemBuilder: (context, index) {
+                          final course = courses[index];
+                          final courseData = <String, dynamic>{
+                            'title': course.title,
+                            'code': course.code,
+                            'credits': course.credits,
+                            'status': course.status,
+                          };
 
-                    return CourseCard(
-                      course: course,
-                      onTap: () =>
-                          openCourseDetail(context, course, courseData),
-                      onEdit: () => _showEditCourseDialog(context, course),
-                      onDelete: () => _confirmDeleteCourse(context, course),
-                    );
-                  },
-                ),
+                          return CourseCard(
+                            course: course,
+                            onTap: () =>
+                                openCourseDetail(context, course, courseData),
+                            onEdit: () =>
+                                _showEditCourseDialog(context, course),
+                            onDelete: () =>
+                                _confirmDeleteCourse(context, course),
+                          );
+                        },
+                      ),
               ),
             ],
           ),
