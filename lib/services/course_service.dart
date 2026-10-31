@@ -9,4 +9,8 @@ class CourseService {
   Future<List<Course>> loadCourses() async {
     return apiService.getCourses();
   }
+
+  Future<Course> createCourse(Course course) {
+    return apiService.createCourse(course);
+  }
 }

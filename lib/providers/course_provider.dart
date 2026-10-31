@@ -47,6 +47,19 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> createCourse(Course course) async {
+    try {
+      final createdCourse = await repository.createCourse(course);
+      _courses = [createdCourse, ..._courses];
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   void toggleFavorite(String code) {
     if (_favorites.contains(code)) {
       _favorites.remove(code);

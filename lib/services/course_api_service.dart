@@ -26,6 +26,31 @@ class CourseApiService {
     }).toList();
   }
 
+  Future<Course> createCourse(Course course) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/posts'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'title': course.title,
+        'body': course.code,
+        'userId': course.credits,
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Gagal membuat post');
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return Course(
+      id: data['id'] as int?,
+      code: 'Post #${data['id']}',
+      title: _formatTitle(data['title'] as String),
+      credits: data['userId'] as int? ?? course.credits,
+      status: 'active',
+    );
+  }
+
   String _formatTitle(String title) {
     if (title.isEmpty) return title;
     return title[0].toUpperCase() + title.substring(1);
