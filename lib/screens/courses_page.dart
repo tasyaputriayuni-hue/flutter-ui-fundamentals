@@ -37,9 +37,7 @@ class _CoursesPageState extends State<CoursesPage> {
     try {
       final result = await Navigator.push<bool>(
         context,
-        MaterialPageRoute(
-          builder: (_) => CourseDetailPage(course: courseData),
-        ),
+        MaterialPageRoute(builder: (_) => CourseDetailPage(course: courseData)),
       );
 
       if (result == true && context.mounted) {
@@ -59,6 +57,311 @@ class _CoursesPageState extends State<CoursesPage> {
     } finally {
       if (mounted) setState(() => isNavigating = false);
     }
+  }
+
+  void _showAddCourseDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final codeController = TextEditingController();
+    final titleController = TextEditingController();
+    final creditsController = TextEditingController(text: '1');
+    var status = 'active';
+    var isSaving = false;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> save() async {
+              if (!formKey.currentState!.validate()) return;
+              setDialogState(() => isSaving = true);
+
+              final course = Course(
+                code: codeController.text.trim(),
+                title: titleController.text.trim(),
+                credits: int.parse(creditsController.text),
+                status: status,
+              );
+              final success = await context.read<CourseProvider>().createCourse(
+                course,
+              );
+
+              if (!dialogContext.mounted) return;
+              if (success) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(content: Text('Post berhasil dibuat.')),
+                );
+              } else {
+                setDialogState(() => isSaving = false);
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(content: Text('Gagal membuat post.')),
+                );
+              }
+            }
+
+            return AlertDialog(
+              title: const Text('Tambah Post'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: codeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Code / Body',
+                        ),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Code wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Judul'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Judul wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: creditsController,
+                        decoration: const InputDecoration(labelText: 'User ID'),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          final credits = int.tryParse(value ?? '');
+                          return credits == null || credits <= 0
+                              ? 'Credits harus berupa angka lebih dari 0'
+                              : null;
+                        },
+                      ),
+                      DropdownButtonFormField<String>(
+                        initialValue: status,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'planned',
+                            child: Text('Planned'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text('Active'),
+                          ),
+                          DropdownMenuItem(value: 'done', child: Text('Done')),
+                        ],
+                        onChanged: isSaving
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  setDialogState(() => status = value);
+                                }
+                              },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext),
+                  child: const Text('Batal'),
+                ),
+                FilledButton(
+                  onPressed: isSaving ? null : save,
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditCourseDialog(BuildContext context, Course course) {
+    final formKey = GlobalKey<FormState>();
+    final codeController = TextEditingController(text: course.code);
+    final titleController = TextEditingController(text: course.title);
+    final creditsController = TextEditingController(
+      text: course.credits.toString(),
+    );
+    var status = course.status;
+    var isSaving = false;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> save() async {
+              if (!formKey.currentState!.validate() || course.id == null) {
+                return;
+              }
+              setDialogState(() => isSaving = true);
+
+              final updated = Course(
+                id: course.id,
+                code: codeController.text.trim(),
+                title: titleController.text.trim(),
+                credits: int.parse(creditsController.text),
+                status: status,
+              );
+              final success = await context.read<CourseProvider>().updateCourse(
+                course.id!,
+                updated,
+              );
+
+              if (!dialogContext.mounted) return;
+              if (success) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(content: Text('Post berhasil diperbarui.')),
+                );
+              } else {
+                setDialogState(() => isSaving = false);
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(content: Text('Gagal memperbarui post.')),
+                );
+              }
+            }
+
+            return AlertDialog(
+              title: Text('Edit ${course.code}'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: codeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Code / Body',
+                        ),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Code wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Judul'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                            ? 'Judul wajib diisi'
+                            : null,
+                      ),
+                      TextFormField(
+                        controller: creditsController,
+                        decoration: const InputDecoration(labelText: 'User ID'),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          final credits = int.tryParse(value ?? '');
+                          return credits == null || credits <= 0
+                              ? 'Credits harus berupa angka lebih dari 0'
+                              : null;
+                        },
+                      ),
+                      DropdownButtonFormField<String>(
+                        initialValue: status,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'planned',
+                            child: Text('Planned'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text('Active'),
+                          ),
+                          DropdownMenuItem(value: 'done', child: Text('Done')),
+                        ],
+                        onChanged: isSaving
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  setDialogState(() => status = value);
+                                }
+                              },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext),
+                  child: const Text('Batal'),
+                ),
+                FilledButton(
+                  onPressed: isSaving ? null : save,
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteCourse(BuildContext context, Course course) {
+    if (course.id == null) return;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Hapus Post?'),
+        content: Text('Hapus "${course.title}" dari daftar?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await context.read<CourseProvider>().deleteCourse(
+                course.id!,
+              );
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Post berhasil dihapus.'
+                        : 'Gagal menghapus post.',
+                  ),
+                ),
+              );
+            },
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -103,9 +406,29 @@ class _CoursesPageState extends State<CoursesPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Daftar Course',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Daftar Course',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () => _showAddCourseDialog(context),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Tambah'),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.outlined(
+                    tooltip: 'Refresh data',
+                    onPressed: provider.loadCourses,
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ],
               ),
               const SizedBox(height: 4),
               Text(
@@ -114,33 +437,62 @@ class _CoursesPageState extends State<CoursesPage> {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    mainAxisExtent: 96,
-                  ),
-                  itemCount: courses.length,
-                  itemBuilder: (context, index) {
-                    final course = courses[index];
-                    final courseData = <String, dynamic>{
-                      'title': course.title,
-                      'code': course.code,
-                      'credits': course.credits,
-                      'status': course.status,
-                    };
+                child: courses.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.school_outlined, size: 56),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Belum ada course',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Tambahkan course atau refresh data dari Supabase.',
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: provider.loadCourses,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Refresh'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: 128,
+                        ),
+                        itemCount: courses.length,
+                        itemBuilder: (context, index) {
+                          final course = courses[index];
+                          final courseData = <String, dynamic>{
+                            'title': course.title,
+                            'code': course.code,
+                            'credits': course.credits,
+                            'status': course.status,
+                          };
 
-                    return CourseCard(
-                      course: course,
-                      onTap: () => openCourseDetail(
-                        context,
-                        course,
-                        courseData,
+                          return CourseCard(
+                            course: course,
+                            onTap: () =>
+                                openCourseDetail(context, course, courseData),
+                            onEdit: () =>
+                                _showEditCourseDialog(context, course),
+                            onDelete: () =>
+                                _confirmDeleteCourse(context, course),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),

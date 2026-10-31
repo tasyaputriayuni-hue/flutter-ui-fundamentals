@@ -1,59 +1,88 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/course.dart';
 
-class CourseApiService {
+import 'package:http/http.dart' as http;
+
+import '../models/course.dart';
+import 'course_data_source.dart';
+
+class CourseApiService implements CourseDataSource {
   final String baseUrl;
 
   CourseApiService(this.baseUrl);
 
-  // 1. Method GET (Mengambil daftar course)
+  @override
   Future<List<Course>> getCourses() async {
-    final response = await http.get(Uri.parse('$baseUrl/courses'));
+    final response = await http.get(Uri.parse('$baseUrl/posts'));
     if (response.statusCode != 200) {
       throw Exception('Gagal mengambil course');
     }
     final List data = jsonDecode(response.body) as List;
-    return data
-        .map((e) => Course.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return data.map((e) {
+      final post = e as Map<String, dynamic>;
+      return Course(
+        id: post['id'] as int,
+        code: 'Post #${post['id']}',
+        title: _formatTitle(post['title'] as String),
+        credits: post['userId'] as int,
+        status: 'active',
+      );
+    }).toList();
   }
 
-  // 2. Method POST (Membuat course baru)
+  @override
   Future<Course> createCourse(Course course) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/courses'),
+      Uri.parse('$baseUrl/posts'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(course.toJson()),
+      body: jsonEncode({
+        'title': course.title,
+        'body': course.code,
+        'userId': course.credits,
+      }),
     );
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Course.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>,
-      );
+
+    if (response.statusCode != 201) {
+      throw Exception('Gagal membuat post');
     }
-    throw Exception('Gagal membuat course');
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return Course(
+      id: data['id'] as int?,
+      code: 'Post #${data['id']}',
+      title: _formatTitle(data['title'] as String),
+      credits: data['userId'] as int? ?? course.credits,
+      status: 'active',
+    );
   }
 
-  // 3. Method PUT (Memperbarui course berdasarkan ID)
+  @override
   Future<void> updateCourse(int id, Course course) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/courses/$id'),
+      Uri.parse('$baseUrl/posts/$id'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(course.toJson()),
+      body: jsonEncode({
+        'title': course.title,
+        'body': course.code,
+        'userId': course.credits,
+      }),
     );
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Gagal memperbarui course');
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal memperbarui post');
     }
   }
 
-  // 4. Method DELETE (Menghapus course berdasarkan ID) -> DITAMBAHKAN
+  @override
   Future<void> deleteCourse(int id) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/courses/$id'),
-    );
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Gagal menghapus course');
+    final response = await http.delete(Uri.parse('$baseUrl/posts/$id'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal menghapus post');
     }
+  }
+
+  String _formatTitle(String title) {
+    if (title.isEmpty) return title;
+    return title[0].toUpperCase() + title.substring(1);
   }
 }

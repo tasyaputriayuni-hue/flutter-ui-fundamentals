@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/course_provider.dart';
+import '../widgets/error_view.dart';
 import 'courses_page.dart';
 import 'home_page.dart';
 import 'profile_page.dart';
@@ -16,11 +17,7 @@ class CourseExplorerPage extends StatefulWidget {
 class _CourseExplorerPageState extends State<CourseExplorerPage> {
   int selectedIndex = 0;
 
-  final List<Widget> pages = const [
-    HomePage(),
-    CoursesPage(),
-    ProfilePage(),
-  ];
+  final List<Widget> pages = const [HomePage(), CoursesPage(), ProfilePage()];
 
   void changePage(int index) {
     setState(() {
@@ -42,25 +39,9 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
           content = const Center(child: CircularProgressIndicator());
         } else if (provider.error != null) {
           content = Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, size: 56),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Gagal memuat data:\n${provider.error}',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    onPressed: provider.loadCourses,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Coba Lagi'),
-                  ),
-                ],
-              ),
+            child: ErrorView(
+              message: provider.error!,
+              onRetry: provider.loadCourses,
             ),
           );
         } else {

@@ -10,7 +10,7 @@ class Course {
     required this.code,
     required this.title,
     required this.credits,
-    this.status = 'planned',
+    required this.status,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -19,14 +19,14 @@ class Course {
       code: json['code'] as String,
       title: json['title'] as String,
       credits: json['credits'] as int,
-      status: (json['status'] as String?) ?? 'planned',
+      status: json['status'] as String,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'code': code,
-        'title': title,
-        'credits': credits,
-        'status': status,
-      };
+    'code': code,
+    'title': title,
+    'credits': credits,
+    'status': status,
+  };
 }
